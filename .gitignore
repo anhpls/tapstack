@@ -18,3 +18,9 @@ DerivedData/
 # business docs
 origin:pitch/
 roadmap/
+
+# database priv info
+tapstack-supabase-pass.txt
+
+# ignore keys
+ios/Tapstack/Tapstack/Secrets.swift
