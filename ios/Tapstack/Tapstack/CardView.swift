@@ -11,11 +11,13 @@ struct CardView: View {
     let card: LoyaltyCard
 
     var body: some View {
+        let ready = card.stamps >= card.stampsNeeded
         VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Text(card.shopName).font(.title3.bold())
                 Spacer()
-                Text("\(card.stamps)/\(card.stampsNeeded)").font(.subheadline.monospacedDigit())
+                Text("\(min(card.stamps, card.stampsNeeded))/\(card.stampsNeeded)")
+                    .font(.subheadline.monospacedDigit())
             }
 
             // stamp slots
@@ -27,10 +29,12 @@ struct CardView: View {
                 }
             }
 
-            Text(card.stampsNeeded - card.stamps == 1
-                 ? "1 visit from: \(card.reward)"
-                 : "\(card.stampsNeeded - card.stamps) visits to: \(card.reward)")
-                .font(.footnote)
+            Text(ready
+                 ? "🎉 Reward ready: \(card.reward)"
+                 : card.stampsNeeded - card.stamps == 1
+                    ? "1 visit from: \(card.reward)"
+                    : "\(card.stampsNeeded - card.stamps) visits to: \(card.reward)")
+                .font(.footnote.weight(ready ? .semibold : .regular))
                 .opacity(0.85)
         }
         .foregroundStyle(Theme.navy)

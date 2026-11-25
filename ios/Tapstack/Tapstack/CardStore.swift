@@ -14,7 +14,7 @@ struct MembershipRow: Decodable {
     let id: UUID
     let member_number: String
     let shops: ShopEmbed
-    let stamps: [CountRow]
+    let balance: Int
 
     struct ShopEmbed: Decodable {
         let id: UUID
@@ -27,9 +27,7 @@ struct MembershipRow: Decodable {
         let stamps_needed: Int
         let reward: String
     }
-    struct CountRow: Decodable {
-        let count: Int
-    }
+ 
 
     // database row -> the card your views already know how to draw
     func toCard() -> LoyaltyCard? {
@@ -41,7 +39,7 @@ struct MembershipRow: Decodable {
             category: category,
             memberNumber: member_number,
             color: Color(hex: shops.color_hex),
-            stamps: stamps.first?.count ?? 0,
+            stamps: balance,
             stampsNeeded: program.stamps_needed,
             reward: program.reward,
             shopID: shops.id
@@ -61,7 +59,7 @@ final class CardStore {
         do {
             let rows: [MembershipRow] = try await supabase
                 .from("memberships")
-                .select("id, member_number, shops(id, name, category, color_hex, stamp_programs(stamps_needed, reward)), stamps(count)")
+                .select("id, member_number, shops(id, name, category, color_hex, stamp_programs(stamps_needed, reward)), balance")
                 .order("created_at")
                 .execute()
                 .value

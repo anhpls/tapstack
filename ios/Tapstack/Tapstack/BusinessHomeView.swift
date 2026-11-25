@@ -24,6 +24,11 @@ struct StampParams: Encodable {
     let p_count: Int
 }
 
+struct AdjustParams: Encodable {
+    let p_member_number: String
+    let p_change: Int
+}
+
 struct BusinessHomeView: View {
     let shop: ShopRole
     let onExit: () -> Void
@@ -33,7 +38,8 @@ struct BusinessHomeView: View {
     @State private var message: String?
     @State private var isWorking = false
     @State private var count = 1
-
+    @State private var adjustment = 0
+    
     var body: some View {
         NavigationStack {
             VStack(alignment: .leading, spacing: 20) {
@@ -68,9 +74,40 @@ struct BusinessHomeView: View {
                             .background(Theme.navy, in: RoundedRectangle(cornerRadius: 14))
                             .foregroundStyle(.white)
                     }
-                    .disabled(isWorking)
+                    if card.stamps >= card.stampsNeeded {
+                        Button {
+                            Task {
+                                await callCardFunction("redeem_reward") {
+                                    "Reward redeemed! \($0) stamp\($0 == 1 ? "" : "s") carried over."
+                                }
+                            }
+                        } label: {
+                            Label("Redeem: \(card.reward)", systemImage: "gift.fill")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Theme.accent, in: RoundedRectangle(cornerRadius: 14))
+                                .foregroundStyle(.white)
+                        }
+                        .disabled(isWorking)
+                    }
+
+                    if shop.role != "staff" {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Fix a mistake").font(.subheadline.weight(.semibold))
+                            Stepper("Change: \(adjustment > 0 ? "+" : "")\(adjustment)",
+                                    value: $adjustment, in: -5...5)
+                            Button("Apply correction") {
+                                Task { await adjustStamps() }
+                            }
+                            .disabled(adjustment == 0 || isWorking)
+                        }
+                        .padding()
+                        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                    }
                 }
 
+                
                 if let message {
                     Text(message).font(.footnote).foregroundStyle(.secondary)
                 }
@@ -92,7 +129,7 @@ struct BusinessHomeView: View {
         do {
             let rows: [MembershipRow] = try await supabase
                 .from("memberships")
-                .select("id, member_number, shops(id, name, category, color_hex, stamp_programs(stamps_needed, reward)), stamps(count)")
+                .select("id, member_number, shops(id, name, category, color_hex, stamp_programs(stamps_needed, reward)), balance")
                 .eq("member_number", value: memberNumber.uppercased())
                 .eq("shop_id", value: shop.shop_id.uuidString)
                 .execute()
@@ -120,6 +157,47 @@ struct BusinessHomeView: View {
             message = "Stamp added: \(total)/\(current.stampsNeeded)"
         } catch let error as PostgrestError {
             message = error.message          // shows the rule that blocked it
+        } catch {
+            message = error.localizedDescription
+        }
+    }
+    
+    // calls a database function that takes a member number and returns the new balance
+    private func callCardFunction(_ name: String, successMessage: @escaping (Int) -> String) async {
+        guard let current = card else { return }
+        isWorking = true
+        defer { isWorking = false }
+        do {
+            let newBalance: Int = try await supabase
+                .rpc(name, params: ["p_member_number": current.memberNumber])
+                .execute()
+                .value
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            await lookUp()
+            message = successMessage(newBalance)
+        } catch let error as PostgrestError {
+            message = error.message
+        } catch {
+            message = error.localizedDescription
+        }
+    }
+    
+    private func adjustStamps() async {
+        guard let current = card else { return }
+        isWorking = true
+        defer { isWorking = false }
+        do {
+            let newBalance: Int = try await supabase
+                .rpc("adjust_stamps", params: AdjustParams(p_member_number: current.memberNumber,
+                                                           p_change: adjustment))
+                .execute()
+                .value
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            await lookUp()
+            message = "Corrected by \(adjustment > 0 ? "+" : "")\(adjustment). Balance: \(newBalance)."
+            adjustment = 0
+        } catch let error as PostgrestError {
+            message = error.message
         } catch {
             message = error.localizedDescription
         }
