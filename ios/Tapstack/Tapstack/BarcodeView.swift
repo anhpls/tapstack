@@ -34,5 +34,3 @@ struct BarcodeView: View {
 #Preview {
     BarcodeView(value: "TS-881902").padding()
 }
-
-import Foundation

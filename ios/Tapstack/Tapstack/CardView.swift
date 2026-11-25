@@ -22,7 +22,7 @@ struct CardView: View {
             HStack(spacing: 6) {
                 ForEach(0..<card.stampsNeeded, id: \.self) { i in
                     Circle()
-                        .fill(i < card.stamps ? .white : .white.opacity(0.25))
+                        .fill(i < card.stamps ? Theme.navy : Theme.navy.opacity(0.12))
                         .frame(width: 18, height: 18)
                 }
             }
@@ -33,11 +33,11 @@ struct CardView: View {
                 .font(.footnote)
                 .opacity(0.85)
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(Theme.navy)
         .padding(20)
         .frame(maxWidth: .infinity, minHeight: 180, alignment: .topLeading)
         .background(card.color, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .shadow(color: .black.opacity(0.15), radius: 10, y: 6)
+        .shadow(color: .black.opacity(0.08), radius: 8, y: 4)
     }
 }
 
@@ -45,4 +45,3 @@ struct CardView: View {
     CardView(card: LoyaltyCard.samples[1]).padding()
 }
 
-import Foundation
