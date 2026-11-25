@@ -6,11 +6,43 @@
 //
 
 import SwiftUI
+import Supabase
+
+struct HistoryRow: Decodable, Identifiable {
+    let happened_at: Date
+    let kind: String       // "visit", "reward" or "correction"
+    let change: Int
+    let bonus: Int
+    let note: String?
+    var id: String { "\(kind)-\(happened_at.timeIntervalSince1970)" }
+    
+    var icon: String {
+        switch kind {
+        case "reward": "gift.fill"
+        case "adjustment": "slider.horizontal.3"
+        default: "checkmark.seal"
+        }
+    }
+    
+    var title: String {
+            switch kind {
+            case "reward":
+                return "Redeemed: \(note ?? "reward")"
+            case "adjustment":
+                return "Stamps adjusted by the shop: \(change > 0 ? "+" : "")\(change)"
+            default:
+                let base = "+\(change) stamp\(change == 1 ? "" : "s")"
+                return bonus > 0 ? "\(base) (incl. \(bonus) bonus)" : base
+            }
+        
+    }
+}
 
 struct CardDetailView: View {
     let card: LoyaltyCard
     @Environment(\.dismiss) private var dismiss
     @State private var previousBrightness: CGFloat = 0.5
+    @State private var history: [HistoryRow] = []
     
     var body: some View {
         ScrollView {
@@ -29,17 +61,17 @@ struct CardDetailView: View {
                 .frame(maxWidth: .infinity)
                 .background(.white, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 
-                // deals (placeholder)
-                DetailSection(title: "Deals") {
-                    PlaceholderRow(icon: "tag", title: "Lorem ipsum dolor", detail: "Sit amet consectetur · Ends Dec 12")
-                    PlaceholderRow(icon: "tag", title: "Adipiscing elit sed", detail: "Do eiusmod tempor · Ends Dec 20")
-                }
-                
-                // stamp history (placeholder)
                 DetailSection(title: "Stamp history") {
-                    PlaceholderRow(icon: "checkmark.seal", title: "Lorem ipsum", detail: "Nov 22 · +1 stamp")
-                    PlaceholderRow(icon: "checkmark.seal", title: "Dolor sit amet", detail: "Nov 15 · +1 stamp")
-                    PlaceholderRow(icon: "checkmark.seal", title: "Consectetur", detail: "Nov 8 · +1 stamp")
+                    if history.isEmpty {
+                        PlaceholderRow(icon: "clock", title: "No stamps yet",
+                                       detail: "Your visits will show up here.")
+                    } else {
+                        ForEach(history) { row in
+                            PlaceholderRow(icon: row.icon,
+                                           title: row.title,
+                                           detail: row.happened_at.formatted(date: .abbreviated, time: .shortened))
+                        }
+                    }
                 }
                 
                 // open in shop app (placeholder, does nothing yet)
@@ -68,6 +100,12 @@ struct CardDetailView: View {
         }
         .onDisappear {
             currentScreen?.brightness = previousBrightness
+        }
+        .task {
+            history = (try? await supabase
+                .rpc("card_history", params: ["p_membership_id": card.id.uuidString])
+                .execute()
+                .value) ?? []
         }
     }
     private var currentScreen: UIScreen? {
