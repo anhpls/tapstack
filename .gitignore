@@ -24,3 +24,6 @@ tapstack-supabase-pass.txt
 
 # ignore keys
 ios/Tapstack/Tapstack/Secrets.swift
+
+# ignore progress ss
+progress/
