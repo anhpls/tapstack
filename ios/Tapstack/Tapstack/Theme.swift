@@ -19,5 +19,16 @@ enum Theme{
     static let lavender = Color(red: 0.867, green: 0.835, blue: 0.941) // #DDD5F0
     static let sage     = Color(red: 0.851, green: 0.894, blue: 0.800) // #D9E4CC
     static let rose     = Color(red: 0.953, green: 0.820, blue: 0.863) // #F3D1DC
+}
 
+extension Color {
+    init(hex: String) {
+        let clean = hex.trimmingCharacters(in: CharacterSet(charactersIn: "#"))
+        let value = UInt64(clean, radix: 16) ?? 0
+        self.init(
+            red:   Double((value >> 16) & 0xFF) / 255,
+            green: Double((value >> 8)  & 0xFF) / 255,
+            blue:  Double(value & 0xFF) / 255
+        )
+    }
 }

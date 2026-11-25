@@ -20,7 +20,7 @@ struct CategoryStackView: View {
                 withAnimation(.spring(duration: 0.35)) { isExpanded.toggle() }
             } label: {
                 HStack {
-                    Text(category.rawValue).font(.headline)
+                    Text(category.title).font(.headline)
                     Text("\(cards.count)").font(.subheadline).foregroundStyle(.secondary)
                     Spacer()
                     Image(systemName: "chevron.down")

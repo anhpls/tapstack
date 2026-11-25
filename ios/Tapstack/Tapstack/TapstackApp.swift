@@ -11,7 +11,7 @@ import SwiftUI
 struct TapstackApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
         }
     }
 }

@@ -7,16 +7,22 @@
 
 import SwiftUI
 
-// 1. NEW: the list of categories (put it above the struct)
+// the list of categories
 enum ShopCategory: String, CaseIterable {
-    case cafe = "Cafés"
-    case boba = "Boba"
-    case restaurant = "Restaurants"
-    case bakery = "Bakeries"
+    case cafe, boba, restaurant, bakery      // database values
+
+    var title: String {
+        switch self {
+        case .cafe: "Cafés"
+        case .boba: "Boba"
+        case .restaurant: "Restaurants"
+        case .bakery: "Bakeries"
+        }
+    }
 }
 
 struct LoyaltyCard: Identifiable {
-    let id = UUID()
+    var id = UUID()             // real cards use the membership's database ID
     let shopName: String
     let category: ShopCategory
     let memberNumber: String
@@ -24,6 +30,7 @@ struct LoyaltyCard: Identifiable {
     let stamps: Int
     let stampsNeeded: Int
     let reward: String
+    var shopID: UUID? = nil     // which shop this card belongs to
 }
 
 extension LoyaltyCard {
