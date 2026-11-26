@@ -35,6 +35,9 @@ struct LoyaltyCard: Identifiable {
     var backImageURL: URL? = nil // back photo
     var isVerified = true // false = personal card shop hasn't confirmed
     var imageAspect: CGFloat? = nil
+    var backImageAspect: CGFloat? = nil
+    var imagePath: String? = nil
+    var backImagePath: String? = nil
 }
 
 extension LoyaltyCard {

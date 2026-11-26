@@ -53,6 +53,7 @@ struct RealCardView: View {
             }
         }
         .aspectRatio(aspectRatio, contentMode: .fit)
+        .frame(maxWidth: .infinity)
         .clipShape(shape)
         .overlay(shape.strokeBorder(.white.opacity(0.35), lineWidth: 1))      // bright edge
         .overlay(shape.strokeBorder(.black.opacity(0.12), lineWidth: 0.5))    // crisp outline

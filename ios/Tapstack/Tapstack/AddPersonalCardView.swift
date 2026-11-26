@@ -18,6 +18,7 @@ struct NewPersonalCard: Encodable {
     let image_path: String?
     let image_back_path: String?
     let image_aspect: Double?
+    let image_back_aspect: Double?
 }
 
 struct AddPersonalCardView: View {
@@ -55,7 +56,7 @@ struct AddPersonalCardView: View {
                         HStack { ProgressView(); Text("Polishing your card…") }
                     } else if let front {
                         RealCardView(image: front, aspectRatio: aspect,
-                                     badge: "Not verified · \(stampsOnCard) pending")
+                                     badge: "Not verified · \(stampsOnCard) pending", title: shopName)
                         .padding(.vertical, 12)
                         .listRowBackground(Color.clear)
                         Button("Retake this side", systemImage: "camera") {
@@ -199,7 +200,8 @@ struct AddPersonalCardView: View {
                                         pending_stamps: stampsOnCard,
                                         image_path: frontPath,
                                         image_back_path: backPath,
-                                        image_aspect: Double(aspect)))
+                                        image_aspect: Double(aspect),
+                                        image_back_aspect: back.map { Double($0.size.width / $0.size.height) }))
                 .execute()
             
             await store.load()

@@ -56,6 +56,16 @@ struct PersonalCardRow: Decodable {
     let image_path: String?
     let image_back_path: String?
     let image_aspect: Double?
+    let image_back_aspect: Double?
+}
+
+struct PersonalCardUpdate: Encodable {
+    let shop_name: String
+    let pending_stamps: Int
+    let image_path: String?
+    let image_back_path: String?
+    let image_aspect: Double?
+    let image_back_aspect: Double?
 }
 
 @Observable @MainActor
@@ -71,6 +81,7 @@ final class CardStore {
             let rows: [MembershipRow] = try await supabase
                 .from("memberships")
                 .select("id, member_number, shops(id, name, category, color_hex, stamp_programs(stamps_needed, reward)), balance")
+                .is("hidden_at", value: nil)
                 .order("created_at")
                 .execute()
                 .value
@@ -96,7 +107,10 @@ final class CardStore {
                     imageURL: await signedURL(row.image_path),
                     backImageURL: await signedURL(row.image_back_path),
                     isVerified: false,
-                    imageAspect: row.image_aspect.map { CGFloat($0) }
+                    imageAspect: row.image_aspect.map { CGFloat($0) },
+                    backImageAspect: row.image_back_aspect.map { CGFloat($0) },
+                    imagePath: row.image_path,
+                    backImagePath: row.image_back_path
                 ))
             }
             cards = all
@@ -108,10 +122,8 @@ final class CardStore {
 
     func join(shopID: UUID) async {
         do {
-            let userID = try await supabase.auth.session.user.id
             try await supabase
-                .from("memberships")
-                .insert(["user_id": userID.uuidString, "shop_id": shopID.uuidString])
+                .rpc("join_shop", params: ["p_shop_id": shopID.uuidString])
                 .execute()
             await load()
         } catch {
@@ -125,5 +137,57 @@ final class CardStore {
         return try? await supabase.storage
             .from("card-images")
             .createSignedURL(path: path, expiresIn: 3600)
+    }
+    
+    // Tapstack card: hide it (shop keeps its records)
+    func hide(_ card: LoyaltyCard) async {
+        do {
+            try await supabase
+                .rpc("hide_membership", params: ["p_membership_id": card.id.uuidString])
+                .execute()
+            await load()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    // personal card: delete the row and its photos
+    func deletePersonal(_ card: LoyaltyCard) async {
+        do {
+            let paths = [card.imagePath, card.backImagePath].compactMap { $0 }
+            if !paths.isEmpty {
+                _ = try? await supabase.storage.from("card-images").remove(paths: paths)
+            }
+            try await supabase
+                .from("personal_cards")
+                .delete()
+                .eq("id", value: card.id.uuidString)
+                .execute()
+            await load()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+    }
+
+    // personal card: rename, fix stamps, or swap which side is the front
+    func updatePersonal(_ card: LoyaltyCard, name: String, pending: Int, swapSides: Bool) async {
+        let update = PersonalCardUpdate(
+            shop_name: name,
+            pending_stamps: pending,
+            image_path: swapSides ? card.backImagePath : card.imagePath,
+            image_back_path: swapSides ? card.imagePath : card.backImagePath,
+            image_aspect: (swapSides ? card.backImageAspect : card.imageAspect).map { Double($0) },
+            image_back_aspect: (swapSides ? card.imageAspect : card.backImageAspect).map { Double($0) }
+        )
+        do {
+            try await supabase
+                .from("personal_cards")
+                .update(update)
+                .eq("id", value: card.id.uuidString)
+                .execute()
+            await load()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
     }
 }

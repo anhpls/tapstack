@@ -5,6 +5,13 @@
 //  Created by Anh Huynh on 11/25/26.
 //
 
+//
+//  CardDetailView.swift
+//  Tapstack
+//
+//  Created by Anh Huynh on 11/25/26.
+//
+
 import SwiftUI
 import Supabase
 
@@ -40,10 +47,13 @@ struct HistoryRow: Decodable, Identifiable {
 struct CardDetailView: View {
     let card: LoyaltyCard
     @Environment(\.dismiss) private var dismiss
+    @Environment(CardStore.self) private var store
     @State private var previousBrightness: CGFloat = 0.5
     @State private var fadeTask: Task<Void, Never>?
     @State private var history: [HistoryRow] = []
     @State private var showingRedeem = false
+    @State private var showingEdit = false
+    @State private var confirmRemove = false
 
     var body: some View {
         ScrollView {
@@ -97,16 +107,22 @@ struct CardDetailView: View {
                         }
                     }
                 } else {
-                    // PERSONAL CARD: back photo + pending stamps
-
-                    if let back = card.backImageURL {
-                        RealCardView(imageURL: back, aspectRatio: card.imageAspect ?? 1.75)
-                    }
-
+                    // PERSONAL CARD: pending stamps + edit
                     DetailSection(title: "Pending stamps") {
                         PlaceholderRow(icon: "hourglass",
                                        title: "\(card.stamps) of \(card.stampsNeeded) stamps (pending)",
                                        detail: "Show your paper card at \(card.shopName) to confirm them.")
+                    }
+
+                    Button {
+                        showingEdit = true
+                    } label: {
+                        Label("Edit card", systemImage: "pencil")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .foregroundStyle(Theme.navy)
                     }
                 }
 
@@ -120,6 +136,12 @@ struct CardDetailView: View {
                         .padding()
                         .background(Theme.navy, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                         .foregroundStyle(.white)
+                }
+
+                if card.isVerified {
+                    Button("Remove from my stack", role: .destructive) { confirmRemove = true }
+                        .font(.footnote)
+                        .frame(maxWidth: .infinity)
                 }
             }
             .padding()
@@ -148,6 +170,20 @@ struct CardDetailView: View {
         }
         .fullScreenCover(isPresented: $showingRedeem) {
             RedeemView(card: card)
+        }
+        .sheet(isPresented: $showingEdit) {
+            EditPersonalCardView(card: card) { dismiss() }
+        }
+        .confirmationDialog("Remove \(card.shopName)?", isPresented: $confirmRemove,
+                            titleVisibility: .visible) {
+            Button("Remove card", role: .destructive) {
+                Task {
+                    await store.hide(card)
+                    dismiss()
+                }
+            }
+        } message: {
+            Text("Your stamps are saved. Join \(card.shopName) again anytime to bring the card back.")
         }
     }
 
@@ -210,4 +246,5 @@ struct PlaceholderRow: View {
 
 #Preview {
     CardDetailView(card: LoyaltyCard.samples[0])
+        .environment(CardStore())
 }

@@ -52,7 +52,7 @@ struct ContentView: View {
                                 Image(systemName: "plus")
                             }
                         }
-                    }   
+                    }
                     .task {
                         await store.load()
                         roles = (try? await supabase
@@ -68,6 +68,7 @@ struct ContentView: View {
                     .sheet(isPresented: $showingAddOwn) {
                         AddPersonalCardView(store: store)
                     }
+                    .environment(store)
             }
         }
     }
