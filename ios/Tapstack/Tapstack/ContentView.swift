@@ -20,7 +20,7 @@ struct ContentView: View {
             BusinessHomeView(shop: shop) { businessShop = nil }
         } else {
             NavigationStack {
-                HomeView(cards: store.cards)
+                HomeView(cards: store.cards, onRefresh: { await store.load() })
                     .overlay {
                         if store.cards.isEmpty && !store.isLoading {
                             ContentUnavailableView("No cards yet",
@@ -61,7 +61,6 @@ struct ContentView: View {
                             .execute()
                             .value) ?? []
                     }
-                    .refreshable { await store.load() }
                     .sheet(isPresented: $showingJoin) {
                         JoinShopView(store: store)
                     }

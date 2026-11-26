@@ -22,7 +22,7 @@ struct HistoryRow: Decodable, Identifiable {
     let bonus: Int
     let note: String?
     var id: String { "\(kind)-\(happened_at.timeIntervalSince1970)" }
-
+    
     var icon: String {
         switch kind {
         case "reward": "gift.fill"
@@ -30,7 +30,7 @@ struct HistoryRow: Decodable, Identifiable {
         default: "checkmark.seal"
         }
     }
-
+    
     var title: String {
         switch kind {
         case "reward":
@@ -54,23 +54,42 @@ struct CardDetailView: View {
     @State private var showingRedeem = false
     @State private var showingEdit = false
     @State private var confirmRemove = false
-
+    @State private var isRefreshing = false
+    
     var body: some View {
+        let card = store.cards.first { $0.id == self.card.id } ?? self.card
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                // tap the empty space above the card to close
-                Color.clear
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 28)
-                    .contentShape(Rectangle())
-                    .onTapGesture { dismiss() }
-
+                HStack {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture { dismiss() }
+                    
+                    Button {
+                        Task { await refresh() }
+                    } label: {
+                        Group {
+                            if isRefreshing {
+                                ProgressView().controlSize(.small)
+                            } else {
+                                Image(systemName: "arrow.clockwise")
+                                    .font(.subheadline.weight(.semibold))
+                            }
+                        }
+                        .frame(width: 32, height: 32)
+                        .background(.white, in: Circle())
+                        .foregroundStyle(Theme.navy)
+                    }
+                    .disabled(isRefreshing)
+                }
+                .frame(height: 32)
+                
                 CardView(card: card)
                     .onTapGesture { dismiss() }          // tap the card to close
-
+                
                 if card.isVerified {
                     // TAPSTACK CARD: barcode, reward, history
-
+                    
                     VStack(spacing: 8) {
                         BarcodeView(value: card.memberNumber)
                         Text(card.memberNumber)
@@ -80,7 +99,7 @@ struct CardDetailView: View {
                     .padding()
                     .frame(maxWidth: .infinity)
                     .background(.white, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-
+                    
                     if card.stamps >= card.stampsNeeded {
                         Button {
                             showingRedeem = true
@@ -93,7 +112,7 @@ struct CardDetailView: View {
                                 .foregroundStyle(.white)
                         }
                     }
-
+                    
                     DetailSection(title: "Stamp history") {
                         if history.isEmpty {
                             PlaceholderRow(icon: "clock", title: "No stamps yet",
@@ -113,7 +132,7 @@ struct CardDetailView: View {
                                        title: "\(card.stamps) of \(card.stampsNeeded) stamps (pending)",
                                        detail: "Show your paper card at \(card.shopName) to confirm them.")
                     }
-
+                    
                     Button {
                         showingEdit = true
                     } label: {
@@ -125,7 +144,7 @@ struct CardDetailView: View {
                             .foregroundStyle(Theme.navy)
                     }
                 }
-
+                
                 // open in shop app (placeholder, does nothing yet)
                 Button {
                     // later: deep link into the shop's own app
@@ -137,7 +156,7 @@ struct CardDetailView: View {
                         .background(Theme.navy, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
                         .foregroundStyle(.white)
                 }
-
+                
                 if card.isVerified {
                     Button("Remove from my stack", role: .destructive) { confirmRemove = true }
                         .font(.footnote)
@@ -161,13 +180,7 @@ struct CardDetailView: View {
             let target = previousBrightness
             Task { await fadeBrightness(to: target) }       // fade back down
         }
-        .task {
-            guard card.isVerified else { return }            // personal cards have no history
-            history = (try? await supabase
-                .rpc("card_history", params: ["p_membership_id": card.id.uuidString])
-                .execute()
-                .value) ?? []
-        }
+        .task { await loadHistory() }
         .fullScreenCover(isPresented: $showingRedeem) {
             RedeemView(card: card)
         }
@@ -186,23 +199,39 @@ struct CardDetailView: View {
             Text("Your stamps are saved. Join \(card.shopName) again anytime to bring the card back.")
         }
     }
-
+    
     private var currentScreen: UIScreen? {
         (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.screen
     }
+    
+    private func loadHistory() async {
+        guard card.isVerified else { return }            // personal cards have no history
+        history = (try? await supabase
+            .rpc("card_history", params: ["p_membership_id": card.id.uuidString])
+            .execute()
+            .value) ?? []
+    }
 
+    private func refresh() async {
+        isRefreshing = true
+        defer { isRefreshing = false }
+        await store.load()          // fresh stamps and balances
+        await loadHistory()         // fresh history
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+    }
+    
     // smoothly moves brightness to a new level instead of jumping
     private func fadeBrightness(to target: CGFloat, duration: Double = 0.25, startFast: Bool = false) async {
         guard let screen = currentScreen else { return }
         let start = screen.brightness
         let steps = 15
-
+        
         for i in 1...steps {
             if Task.isCancelled { return }
             let t = Double(i) / Double(steps)
             let eased = startFast
-                ? 1 - pow(1 - t, 3)              // ease out: jumps quickly, then settles
-                : t * t * (3 - 2 * t)            // ease in and out: gentle both ends
+            ? 1 - pow(1 - t, 3)              // ease out: jumps quickly, then settles
+            : t * t * (3 - 2 * t)            // ease in and out: gentle both ends
             screen.brightness = start + (target - start) * eased
             try? await Task.sleep(for: .seconds(duration / Double(steps)))
         }
@@ -213,7 +242,7 @@ struct CardDetailView: View {
 struct DetailSection<Content: View>: View {
     let title: String
     @ViewBuilder let content: Content
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text(title).font(.headline).foregroundStyle(Theme.navy)
@@ -228,7 +257,7 @@ struct PlaceholderRow: View {
     let icon: String
     let title: String
     let detail: String
-
+    
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)

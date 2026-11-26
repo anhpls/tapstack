@@ -12,6 +12,7 @@ struct HomeView: View {
     @State private var selected: LoyaltyCard?
     @State private var expanded: Set<ShopCategory> = []
     @State private var query = ""
+    let onRefresh: () async -> Void
     
     // cards 1 stamp away from a reward
     private var almostThere: [LoyaltyCard] {
@@ -68,6 +69,9 @@ struct HomeView: View {
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .refreshable {
+            await onRefresh()
+        }
         .background(Theme.cream.ignoresSafeArea())
         .searchable(text: $query, prompt: "Search your cards")
         .sheet(item: $selected) { card in
@@ -88,6 +92,6 @@ struct HomeView: View {
 
 #Preview {
     NavigationStack {
-        HomeView(cards: LoyaltyCard.samples).navigationTitle("Tapstack")
+        HomeView(cards: LoyaltyCard.samples, onRefresh: {}).navigationTitle("Tapstack")
     }
 }

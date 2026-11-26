@@ -15,18 +15,19 @@ struct RealCardView: View {
     var badge: String? = nil
     var title: String? = nil
 
-    private let shape = RoundedRectangle(cornerRadius: 18, style: .continuous)
+//    private let shape = RoundedRectangle(cornerRadius: 18, style: .continuous)
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
             face
 
             // studio lighting: soft sheen top-left, slight shade bottom-right
-            LinearGradient(stops: [
-                .init(color: .white.opacity(0.22), location: 0),
-                .init(color: .white.opacity(0), location: 0.45),
-                .init(color: .black.opacity(0.12), location: 1)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
+//            LinearGradient(stops: [
+//                .init(color: .white.opacity(0.22), location: 0),
+//                .init(color: .white.opacity(0), location: 0.45),
+//                .init(color: .black.opacity(0.12), location: 1)
+//            ], startPoint: .topLeading, endPoint: .bottomTrailing)
+            CardSheen()
 
             if let title, !title.isEmpty {
                 // soft dark fade at the top so the name reads on any artwork
@@ -54,11 +55,12 @@ struct RealCardView: View {
         }
         .aspectRatio(aspectRatio, contentMode: .fit)
         .frame(maxWidth: .infinity)
-        .clipShape(shape)
-        .overlay(shape.strokeBorder(.white.opacity(0.35), lineWidth: 1))      // bright edge
-        .overlay(shape.strokeBorder(.black.opacity(0.12), lineWidth: 0.5))    // crisp outline
-        .shadow(color: .black.opacity(0.10), radius: 2, y: 1)                 // contact shadow
-        .shadow(color: .black.opacity(0.20), radius: 18, y: 12)               // soft lift
+//        .clipShape(shape)
+//        .overlay(shape.strokeBorder(.white.opacity(0.35), lineWidth: 1))      // bright edge
+//        .overlay(shape.strokeBorder(.black.opacity(0.12), lineWidth: 0.5))    // crisp outline
+//        .shadow(color: .black.opacity(0.10), radius: 2, y: 1)                 // contact shadow
+//        .shadow(color: .black.opacity(0.20), radius: 18, y: 12)               // soft lift
+        .premiumCard()
     }
 
     @ViewBuilder private var face: some View {
