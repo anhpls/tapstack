@@ -31,6 +31,10 @@ struct LoyaltyCard: Identifiable {
     let stampsNeeded: Int
     let reward: String
     var shopID: UUID? = nil     // which shop this card belongs to
+    var imageURL: URL? = nil // front photo 
+    var backImageURL: URL? = nil // back photo
+    var isVerified = true // false = personal card shop hasn't confirmed
+    var imageAspect: CGFloat? = nil
 }
 
 extension LoyaltyCard {

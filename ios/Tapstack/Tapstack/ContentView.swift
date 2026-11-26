@@ -11,9 +11,10 @@ import Supabase
 struct ContentView: View {
     @State private var store = CardStore()
     @State private var showingJoin = false
+    @State private var showingAddOwn = false
     @State private var roles: [ShopRole] = []
     @State private var businessShop: ShopRole?
-    
+
     var body: some View {
         if let shop = businessShop {
             BusinessHomeView(shop: shop) { businessShop = nil }
@@ -24,7 +25,7 @@ struct ContentView: View {
                         if store.cards.isEmpty && !store.isLoading {
                             ContentUnavailableView("No cards yet",
                                                    systemImage: "rectangle.stack",
-                                                   description: Text("Tap + to join your first shop."))
+                                                   description: Text("Tap + to add your first card."))
                         }
                     }
                     .navigationTitle("Tapstack")
@@ -44,10 +45,16 @@ struct ContentView: View {
                             }
                         }
                         ToolbarItem(placement: .topBarTrailing) {
-                            Button { showingJoin = true } label: { Image(systemName: "plus") }
+                            Menu {
+                                Button("Join a Tapstack shop", systemImage: "storefront") { showingJoin = true }
+                                Button("Add your own card", systemImage: "camera.viewfinder") { showingAddOwn = true }
+                            } label: {
+                                Image(systemName: "plus")
+                            }
                         }
-                    }
-                    .task { await store.load()
+                    }   
+                    .task {
+                        await store.load()
                         roles = (try? await supabase
                             .from("shop_members")
                             .select("shop_id, role, shops(name)")
@@ -57,6 +64,9 @@ struct ContentView: View {
                     .refreshable { await store.load() }
                     .sheet(isPresented: $showingJoin) {
                         JoinShopView(store: store)
+                    }
+                    .sheet(isPresented: $showingAddOwn) {
+                        AddPersonalCardView(store: store)
                     }
             }
         }

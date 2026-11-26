@@ -47,6 +47,17 @@ struct MembershipRow: Decodable {
     }
 }
 
+struct PersonalCardRow: Decodable {
+    let id: UUID
+    let shop_name: String
+    let category: String
+    let stamps_needed: Int
+    let pending_stamps: Int
+    let image_path: String?
+    let image_back_path: String?
+    let image_aspect: Double?
+}
+
 @Observable @MainActor
 final class CardStore {
     var cards: [LoyaltyCard] = []
@@ -63,7 +74,32 @@ final class CardStore {
                 .order("created_at")
                 .execute()
                 .value
-            cards = rows.compactMap { $0.toCard() }
+            var all = rows.compactMap { $0.toCard() }
+
+            let personal: [PersonalCardRow] = try await supabase
+                .from("personal_cards")
+                .select()
+                .order("created_at")
+                .execute()
+                .value
+
+            for row in personal {
+                all.append(LoyaltyCard(
+                    id: row.id,
+                    shopName: row.shop_name,
+                    category: ShopCategory(rawValue: row.category) ?? .cafe,
+                    memberNumber: "",
+                    color: Theme.navy,
+                    stamps: row.pending_stamps,
+                    stampsNeeded: row.stamps_needed,
+                    reward: "Reward",
+                    imageURL: await signedURL(row.image_path),
+                    backImageURL: await signedURL(row.image_back_path),
+                    isVerified: false,
+                    imageAspect: row.image_aspect.map { CGFloat($0) }
+                ))
+            }
+            cards = all
             errorMessage = nil
         } catch {
             errorMessage = error.localizedDescription
@@ -81,5 +117,13 @@ final class CardStore {
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+    
+    // private images need a temporary signed link (valid 1 hour)
+    private func signedURL(_ path: String?) async -> URL? {
+        guard let path else { return nil }
+        return try? await supabase.storage
+            .from("card-images")
+            .createSignedURL(path: path, expiresIn: 3600)
     }
 }

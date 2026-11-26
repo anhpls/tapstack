@@ -24,6 +24,10 @@ struct StampParams: Encodable {
     let p_count: Int
 }
 
+struct PendingRequest: Decodable {
+    let code: String
+}
+
 struct AdjustParams: Encodable {
     let p_member_number: String
     let p_change: Int
@@ -39,6 +43,7 @@ struct BusinessHomeView: View {
     @State private var isWorking = false
     @State private var count = 1
     @State private var adjustment = 0
+    @State private var pendingCode: String?
     
     var body: some View {
         NavigationStack {
@@ -59,6 +64,14 @@ struct BusinessHomeView: View {
                 }
 
                 if let card {
+                    if let pendingCode {
+                        Label("Customer is redeeming: \(card.reward) · Code \(pendingCode)",
+                              systemImage: "gift.fill")
+                            .font(.subheadline.weight(.semibold))
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(Theme.accent.opacity(0.15), in: RoundedRectangle(cornerRadius: 14))
+                    }
                     CardView(card: card)
                     Stepper("Drinks bought: \(count)", value: $count, in: 1...5)
                         .padding()
@@ -135,6 +148,18 @@ struct BusinessHomeView: View {
                 .execute()
                 .value
             card = rows.first?.toCard()
+            pendingCode = nil
+            if let found = card {
+                let requests: [PendingRequest] = try await supabase
+                    .from("redemption_requests")
+                    .select("code")
+                    .eq("membership_id", value: found.id.uuidString)
+                    .eq("status", value: "pending")
+                    .gt("expires_at", value: Date().ISO8601Format())
+                    .execute()
+                    .value
+                pendingCode = requests.first?.code
+            }
             if card == nil {
                 message = "No \(shop.shops.name) card with that number."
             }

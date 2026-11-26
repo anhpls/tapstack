@@ -11,8 +11,21 @@ struct CardView: View {
     let card: LoyaltyCard
 
     var body: some View {
+        if !card.isVerified, let url = card.imageURL {
+            // personal card: the real scanned artwork, presented like a premium card
+            RealCardView(imageURL: url,
+                         aspectRatio: card.imageAspect ?? 1.75,
+                         badge: "Not verified · \(card.stamps) pending", title: card.shopName)
+        } else {
+            standardCard
+        }
+    }
+
+    // Tapstack shop card
+    private var standardCard: some View {
         let ready = card.stamps >= card.stampsNeeded
-        VStack(alignment: .leading, spacing: 16) {
+
+        return VStack(alignment: .leading, spacing: 16) {
             HStack {
                 Text(card.shopName).font(.title3.bold())
                 Spacer()
@@ -48,4 +61,3 @@ struct CardView: View {
 #Preview {
     CardView(card: LoyaltyCard.samples[1]).padding()
 }
-
