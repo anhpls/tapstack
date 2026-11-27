@@ -23,9 +23,8 @@ docs/roadmap/*
 !docs/roadmap/FEATURES.md
 !docs/roadmap/Tapstack.Roadmap.public.pdf
 docs/pitch/*
-!docs/pitch/Tapstack.For Customers.pdf
-!docs/pitch/Tapstack.For Business Owners.pdf
-!docs/pitch/Tapstack.Review Package.pdf
+!docs/pitch/*.pdf
+docs/pitch/*Playbook*
 
 # database priv info
 tapstack-supabase-pass.txt

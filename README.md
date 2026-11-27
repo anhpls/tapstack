@@ -82,9 +82,9 @@ See the [feature catalog](docs/roadmap/FEATURES.md) for all 116 planned features
 
 - **[Feature catalog](docs/roadmap/FEATURES.md):** every feature, its status and why it matters
 - **[Roadmap](docs/roadmap/Tapstack.Roadmap.public.pdf):** the path from zero shops to a paid launch with phases
-- **[For customers](docs/pitch/Tapstack.For%20Customers.pdf)** and **[for business owners](docs/pitch/Tapstack.For%20Business%20Owners.pdf):** the one page pitches
+- **[For customers](docs/pitch/Tapstack%20For%20Customers.pdf)** and **[for business owners](docs/pitch/Tapstack%20For%20Business%20Owners.pdf):** the one page pitches
 - **[Changelog](#changelog):** every update so far
-- **[Review package](docs/pitch/Tapstack.Review%20Package.pdf):** the full product overview
+- **[Review package](docs/pitch/Tapstack%20Review%20Package.pdf):** the full product overview
 
 ## Current Repo layout
 
