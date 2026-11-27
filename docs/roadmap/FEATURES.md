@@ -11,7 +11,7 @@ Every Tapstack feature planned so far: what it is, where it stands, and why it e
 | 🔴 Blocked | Waiting on something (a partner, the $99 account, a decision) |
 | ⬜ Not started | Planned |
 
-**Progress:** 32 of 115 done · 2 in progress · 0 blocked
+**Progress:** 32 of 116 done · 2 in progress · 0 blocked
 
 ## Contents
 
@@ -60,6 +60,7 @@ Every Tapstack feature planned so far: what it is, where it stands, and why it e
 | Verify a paper card at the shop | ✅ Done | Turns a customer's claim into real stamps only after staff check the card. |
 | Keep scanned artwork after verifying | 🟡 In progress | The card still looks like the shop's own design once it becomes official. |
 | Digital stamp slots drawn on the artwork | ⬜ Not started | Real stamps appear on the shop's own card design, not a generic template. |
+| Auto-join on paper card scan | ⬜ Not started | Scanning a Tapstack shop's paper card joins its program right away, so new stamps go digital from day one even before the old ones are checked. |
 | "Moving in" animation | ⬜ Not started | The paper card visibly slides into the stack, so going digital feels like a move, not a loss. |
 | Linked store cards (Level 1) | ⬜ Not started | Brings chains like 85°C and CAVA into the same stack with no partnership: typed or scanned member number. |
 | Brand list | ⬜ Not started | Popular chains look right with no setup: name, colors, app link, code type. |

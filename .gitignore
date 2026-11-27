@@ -15,8 +15,7 @@ xcuserdata/
 DerivedData/
 *.xcuserstate
 
-# business docs: only the public versions are tracked
-# (full roadmap, pitch playbook, catalog snapshot and progress screenshots stay private)
+# business docs; only the public versions
 docs/*
 !docs/roadmap/
 !docs/pitch/

@@ -34,7 +34,7 @@ Tapstack fixes that from both sides of the counter.
 **Paper card rescue**
 - Scan a paper stamp card with **VisionKit**, cleaned up with **Core Image** (auto-adjust and sharpening, plus retaking one side if it caught glare)
 - The card keeps the shop's own artwork in the stack
-- At the counter, staff **verify the paper card** and its stamps transfer into a real membership. Staff can confirm fewer stamps than claimed, never more.
+- **Never carry the paper card again:** once it's scanned, it lives in your stack. The stamps you already earned become official after the shop checks the card once, so nobody can fake stamps from a photo. Staff can confirm fewer stamps than claimed, never more.
 
 **Stamping and rewards that can't be gamed**
 - **Business mode** in the same app: one account, two modes, like Airbnb's host mode
@@ -69,11 +69,12 @@ Tapstack fixes that from both sides of the counter.
 - **Business dashboard** on the web, so a shop with only a POS can stamp from a cheap tablet
 - **Linked memberships:** chain programs by member number, then live balances through Square Loyalty
 - **Deals in every card**, plus AI-drafted deals that owners approve with one tap
+- **Paper card policies and auto-join:** each shop picks how strict the paper card check is (honor every scan, cap the stamps, or start fresh with a bonus), and scanning a Tapstack shop's card joins its program right away, so new stamps go on the digital card from day one
 - **Tap to join** with an NFC sticker and App Clip: no download needed
 - **Arrival pop-up:** the right card appears on your lock screen as you walk in (opt-in)
 - A full **UI/UX redesign** before the first shop pilot
 
-All 115 planned features, each with its status and the reason it exists, are in the **[feature catalog](docs/roadmap/FEATURES.md)**.
+All 116 planned features, each with its status and the reason it exists, are in the **[feature catalog](docs/roadmap/FEATURES.md)**.
 
 ## Product planning
 
