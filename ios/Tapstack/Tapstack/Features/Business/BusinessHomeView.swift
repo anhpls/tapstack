@@ -33,6 +33,17 @@ struct AdjustParams: Encodable {
     let p_change: Int
 }
 
+struct PendingTransfer: Decodable {
+    let code: String
+    let claimed_stamps: Int
+}
+
+struct CompleteTransferParams: Encodable {
+    let p_code: String
+    let p_shop_id: String
+    let p_confirmed: Int
+}
+
 struct BusinessHomeView: View {
     let shop: ShopRole
     let onExit: () -> Void
@@ -44,9 +55,13 @@ struct BusinessHomeView: View {
     @State private var count = 1
     @State private var adjustment = 0
     @State private var pendingCode: String?
+    @State private var transferCode = ""
+    @State private var transfer: PendingTransfer?
+    @State private var confirmCount = 0
     
     var body: some View {
         NavigationStack {
+            ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 Text("Look up a customer").font(.headline).foregroundStyle(Theme.navy)
 
@@ -120,15 +135,46 @@ struct BusinessHomeView: View {
                     }
                 }
 
-                
-                if let message {
-                    Text(message).font(.footnote).foregroundStyle(.secondary)
+                Divider().padding(.vertical, 8)
+
+                // turn a customer's paper card into real stamps
+                Text("Paper card transfer").font(.headline).foregroundStyle(Theme.navy)
+
+                HStack {
+                    TextField("4-digit code", text: $transferCode)
+                        .keyboardType(.numberPad)
+                        .padding()
+                        .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                    Button("Find") { Task { await findTransfer() } }
+                        .disabled(transferCode.count < 4 || isWorking)
                 }
 
-                Spacer()
+                if let transfer {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Customer claims \(transfer.claimed_stamps) stamps. Check their paper card before confirming.")
+                            .font(.subheadline)
+                        Stepper("Confirm \(confirmCount) stamp\(confirmCount == 1 ? "" : "s")",
+                                value: $confirmCount, in: 0...transfer.claimed_stamps)
+                        Button {
+                            Task { await completeTransfer() }
+                        } label: {
+                            Label("Confirm transfer", systemImage: "checkmark.seal.fill")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Theme.navy, in: RoundedRectangle(cornerRadius: 14))
+                                .foregroundStyle(.white)
+                        }
+                        .disabled(isWorking)
+                    }
+                    .padding()
+                    .background(.white, in: RoundedRectangle(cornerRadius: 14))
+                }
             }
             .padding()
+            }
             .background(Theme.cream.ignoresSafeArea())
+            .topBanner($message)
             .navigationTitle(shop.shops.name)
             .toolbar {
                 Button("Customer mode") { onExit() }
@@ -187,6 +233,46 @@ struct BusinessHomeView: View {
         }
     }
     
+    private func findTransfer() async {
+        do {
+            let rows: [PendingTransfer] = try await supabase
+                .from("transfer_requests")
+                .select("code, claimed_stamps")
+                .eq("code", value: transferCode)
+                .eq("shop_id", value: shop.shop_id.uuidString)
+                .eq("status", value: "pending")
+                .gt("expires_at", value: Date().ISO8601Format())
+                .execute()
+                .value
+            transfer = rows.first
+            confirmCount = transfer?.claimed_stamps ?? 0
+            message = transfer == nil ? "No transfer with that code. It may have expired." : nil
+        } catch {
+            message = error.localizedDescription
+        }
+    }
+
+    private func completeTransfer() async {
+        isWorking = true
+        defer { isWorking = false }
+        do {
+            let balance: Int = try await supabase
+                .rpc("complete_transfer", params: CompleteTransferParams(p_code: transferCode,
+                                                                         p_shop_id: shop.shop_id.uuidString,
+                                                                         p_confirmed: confirmCount))
+                .execute()
+                .value
+            UINotificationFeedbackGenerator().notificationOccurred(.success)
+            message = "Transfer complete. Card balance: \(balance)."
+            transfer = nil
+            transferCode = ""
+        } catch let error as PostgrestError {
+            message = error.message
+        } catch {
+            message = error.localizedDescription
+        }
+    }
+
     // calls a database function that takes a member number and returns the new balance
     private func callCardFunction(_ name: String, successMessage: @escaping (Int) -> String) async {
         guard let current = card else { return }

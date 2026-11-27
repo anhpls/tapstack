@@ -55,6 +55,7 @@ struct CardDetailView: View {
     @State private var showingEdit = false
     @State private var confirmRemove = false
     @State private var isRefreshing = false
+    @State private var showingVerify = false
     
     var body: some View {
         let card = store.cards.first { $0.id == self.card.id } ?? self.card
@@ -134,6 +135,17 @@ struct CardDetailView: View {
                     }
                     
                     Button {
+                        showingVerify = true
+                    } label: {
+                        Label("Verify at the shop", systemImage: "checkmark.seal")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Theme.navy, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            .foregroundStyle(.white)
+                    }
+
+                    Button {
                         showingEdit = true
                     } label: {
                         Label("Edit card", systemImage: "pencil")
@@ -186,6 +198,9 @@ struct CardDetailView: View {
         }
         .sheet(isPresented: $showingEdit) {
             EditPersonalCardView(card: card) { dismiss() }
+        }
+        .sheet(isPresented: $showingVerify) {
+            VerifyTransferView(card: card) { dismiss() }
         }
         .confirmationDialog("Remove \(card.shopName)?", isPresented: $confirmRemove,
                             titleVisibility: .visible) {

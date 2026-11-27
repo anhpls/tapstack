@@ -90,6 +90,7 @@ final class CardStore {
             let personal: [PersonalCardRow] = try await supabase
                 .from("personal_cards")
                 .select()
+                .is("transferred_at", value: nil)      // hide cards already verified
                 .order("created_at")
                 .execute()
                 .value

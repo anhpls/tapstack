@@ -49,7 +49,7 @@ struct CardView: View {
                  ? "🎉 Reward ready: \(card.reward)"
                  : card.stampsNeeded - card.stamps == 1
                  ? "1 visit from: \(card.reward)"
-                 : "\(card.stampsNeeded - card.stamps) visits to: \(card.reward)")
+                 : "\(card.stampsNeeded - card.stamps) visits till: \(card.reward)")
             .font(.footnote.weight(ready ? .semibold : .regular))
             .opacity(0.85)
         }

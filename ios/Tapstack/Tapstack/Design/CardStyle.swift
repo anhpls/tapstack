@@ -9,7 +9,7 @@ import SwiftUI
 
 // the shared "premium physical card" finish: sheen, edges, shadow
 struct PremiumCardStyle: ViewModifier {
-    var cornerRadius: CGFloat = 18
+    var cornerRadius: CGFloat = 13
 
     func body(content: Content) -> some View {
         let shape = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
@@ -23,7 +23,7 @@ struct PremiumCardStyle: ViewModifier {
 }
 
 extension View {
-    func premiumCard(cornerRadius: CGFloat = 18) -> some View {
+    func premiumCard(cornerRadius: CGFloat = 13) -> some View {
         modifier(PremiumCardStyle(cornerRadius: cornerRadius))
     }
 }

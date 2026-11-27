@@ -1,6 +1,6 @@
 # Tapstack — Feature catalog
 
-Every Tapstack feature planned so far: what it is, where it stands, and why it exists. The build order lives in the [roadmap](Tapstack.Roadmap.pdf).
+Every Tapstack feature planned so far; what it is, where it stands, and why it exists. The build order lives in the [roadmap](Tapstack.Roadmap.public.pdf).
 
 **How to update a status:** change the Status cell to one of the four values below (copy-paste the whole thing, emoji included), then update the progress line.
 
@@ -62,13 +62,13 @@ Every Tapstack feature planned so far: what it is, where it stands, and why it e
 | Digital stamp slots drawn on the artwork | ⬜ Not started | Real stamps appear on the shop's own card design, not a generic template. |
 | Auto-join on paper card scan | ⬜ Not started | Scanning a Tapstack shop's paper card joins its program right away, so new stamps go digital from day one even before the old ones are checked. |
 | "Moving in" animation | ⬜ Not started | The paper card visibly slides into the stack, so going digital feels like a move, not a loss. |
-| Linked store cards (Level 1) | ⬜ Not started | Brings chains like 85°C and CAVA into the same stack with no partnership: typed or scanned member number. |
-| Brand list | ⬜ Not started | Popular chains look right with no setup: name, colors, app link, code type. |
+| Linked store cards (Level 1) | ⬜ Not started | Brings chains like 85°C and CAVA into the same stack with no partnership, using a typed or scanned member number. |
+| Brand list | ⬜ Not started | Popular chains look right with no setup, with the name, colors, app link and code type built in. |
 | Refreshing-code check | ⬜ Not started | Never shows a stale code that fails at the counter; sends people to the store app instead. |
 | "Open in store app" | ⬜ Not started | Sends traffic to the brand's own app, so brands see Tapstack as a friend, not a rival. |
 | Customer web card | ⬜ Not started | Works for Android users and anyone who won't install an app. |
 | Shared family or roommate cards | ⬜ Not started | One household card earns faster and fits how families actually shop. |
-| Invite a shop | ⬜ Not started | Customers nominate favorites, giving warm leads: "37 of your customers asked for you." |
+| Invite a shop | ⬜ Not started | Customers nominate favorites, giving warm leads like "37 of your customers asked for you." |
 | "Join this shop's rewards?" prompt | ⬜ Not started | Spots a visit (location, receipt scan or card transaction) and offers to join before the reward is lost. |
 
 ## Stamps, rewards and trust
@@ -120,7 +120,7 @@ Every Tapstack feature planned so far: what it is, where it stands, and why it e
 
 | Feature | Status | Why it matters |
 | --- | --- | --- |
-| Business mode in the app | ✅ Done | One account, two modes: the same login switches to staff tools, like Airbnb's host mode. |
+| Business mode in the app | ✅ Done | One account, two modes; the same login switches to staff tools, like Airbnb's host mode. |
 | Paper-card transfer at the counter | ✅ Done | Staff confirm what they see on the paper card; fewer stamps than claimed, never more. |
 | Top banner for results | ✅ Done | Staff see each result at a glance during a rush. |
 | Web Business mode | ⬜ Not started | Stamping in any browser, so a shop with only a POS can use a cheap tablet or the laptop it already has. |
@@ -139,7 +139,7 @@ Every Tapstack feature planned so far: what it is, where it stands, and why it e
 | Dashboard shell (sidebar and pages) | 🟡 In progress | The desktop home for owners, like Shopify on the web. |
 | Dashboard sign-in and real stats | ⬜ Not started | The same email-code login as the app; members, visits, stamps and rewards from live data. |
 | Stamp and correction logs | ⬜ Not started | Owners see every action and who did it, and can spot a staff member correcting too often. |
-| Deal performance | ⬜ Not started | Which deals actually brought people in: views, redemptions, new vs returning. |
+| Deal performance | ⬜ Not started | Which deals actually brought people in, by views, redemptions, and new vs returning customers. |
 | Return rate | ⬜ Not started | How many customers come back within 7, 30 and 60 days, the number paper cards can never show. |
 | Regulars, lapsed customers and win-back offers | ⬜ Not started | Spots who stopped coming and sends them an offer in one tap. |
 | Busy and slow times | ⬜ Not started | Visits by hour and day, with suggestions like "run a 2–4pm deal on Tuesdays". |
@@ -148,18 +148,18 @@ Every Tapstack feature planned so far: what it is, where it stands, and why it e
 | AI insights in plain language | ⬜ Not started | "Your double-stamp week brought back 42 lapsed customers", so owners act without reading charts. |
 | Multi-location comparison | ⬜ Not started | Lets owners with several stores see which one is winning and why. |
 
-*Privacy rule for all of it: shops see totals and trends for their own customers, and Tapstack never sells user data.*
+*Privacy rule for all of it; shops see totals and trends for their own customers, and Tapstack never sells user data.*
 
 ## Connections
 
 | Feature | Status | Why it matters |
 | --- | --- | --- |
-| Square Loyalty, Level 2 (free Sandbox) | ⬜ Not started | Live points from thousands of Square shops with one tap of approval each: the first Plaid-style connection. |
+| Square Loyalty, Level 2 (free Sandbox) | ⬜ Not started | Live points from thousands of Square shops with one tap of approval each; the first Plaid-style connection. |
 | Phone verification by text | ⬜ Not started | Linking by phone must prove the number is yours, or anyone could view another person's points. |
 | POS auto-stamping (Square first) | ⬜ Not started | Stamps happen when the customer pays, so staff do nothing extra and no device is needed. |
 | Toast: run rewards on Tapstack or link Toast Loyalty | ⬜ Not started | Toast's guest experience is basic; Tapstack can be the better layer, via Toast's partner program. |
 | Chain platforms (Punchh/PAR, Paytronix, Thanx) | ⬜ Not started | One platform deal unlocks many brands at once, the integration moat that made Plaid valuable. |
-| Tap once to pay and earn | ⬜ Not started | The long-term goal: paying earns points automatically, using Apple Wallet's NFC loyalty support. Needs partners. |
+| Tap once to pay and earn | ⬜ Not started | The long-term goal; paying earns points automatically, using Apple Wallet's NFC loyalty support. Needs partners. |
 
 ## Accounts, security and privacy
 
