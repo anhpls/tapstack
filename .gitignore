@@ -15,15 +15,22 @@ xcuserdata/
 DerivedData/
 *.xcuserstate
 
-# business docs
-origin:pitch/
-roadmap/
+# business docs: only the public versions are tracked
+# (full roadmap, pitch playbook, catalog snapshot and progress screenshots stay private)
+docs/*
+!docs/roadmap/
+!docs/pitch/
+docs/roadmap/*
+!docs/roadmap/FEATURES.md
+!docs/roadmap/Tapstack.Roadmap.public.pdf
+docs/pitch/*
+!docs/pitch/Tapstack.For Customers.pdf
+!docs/pitch/Tapstack.For Business Owners.pdf
+!docs/pitch/Tapstack — Review Package.pdf
 
 # database priv info
 tapstack-supabase-pass.txt
 
-# ignore keys
-ios/Tapstack/Tapstack/Secrets.swift
+# ignore keys (anywhere in the repo)
+**/Secrets.swift
 
-# ignore progress ss
-progress/
