@@ -6,6 +6,8 @@ import { LayoutDashboard, Tag, Stamp, Users, Settings } from "lucide-react";
 import Image from "next/image";
 import type { StaffShop } from "@/lib/auth";
 import { ShopSwitcher } from "./shop-switcher";
+import { signOut } from "@/app/actions";
+
 // nav bar
 const nav = [
   { href: "/business", label: "Overview", icon: LayoutDashboard },
@@ -67,6 +69,12 @@ export function Sidebar({
       >
         Switch to personal
       </Link>
+      {/* a form so it works as a real post, even before js loads */}
+      <form action={signOut}>
+        <button className="mt-1 block w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-[#6E7772] hover:bg-[#ECEFEA]">
+          Sign out
+        </button>
+      </form>
     </aside>
   );
 }

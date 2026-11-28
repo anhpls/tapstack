@@ -40,6 +40,7 @@ export default function LoginPage() {
     });
     setBusy(false);
     if (error) return setError(error.message);
+    await supabase.rpc("claim_invites"); // join any shops that invited this email
     router.replace("/");
     router.refresh(); // makes the server re-read the new session cookie
   }

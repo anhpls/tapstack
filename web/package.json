@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:types": "supabase gen types typescript --project-id rbuatuopmbaugnanecki > .types.tmp && mv .types.tmp src/lib/database.types.ts",
+    "predev": "npm run db:types || echo 'skipped db types (offline?)'"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -24,6 +26,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
+    "supabase": "^3.4.0",
     "tailwindcss": "4.3.3",
     "typescript": "^5"
   }

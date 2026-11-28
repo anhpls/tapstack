@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getStaffShops } from "@/lib/auth";
+import { signOut } from "./actions";
 
 export default function PersonalHome() {
   return (
@@ -14,10 +15,19 @@ export default function PersonalHome() {
           height={36}
           priority
         />
-        <Suspense fallback={null}>
-          <BusinessSwitch />
-        </Suspense>
+        <div className="flex items-center gap-3">
+          <Suspense fallback={null}>
+            <BusinessSwitch />
+          </Suspense>
+          {/* everyone can sign out, not just staff */}
+          <form action={signOut}>
+            <button className="rounded-full px-4 py-2.5 text-sm font-semibold text-[#6E7772] hover:bg-[#ECEFEA]">
+              Sign out
+            </button>
+          </form>
+        </div>
       </header>
+
       <section className="mx-auto mt-16 max-w-5xl">
         <h1 className="text-3xl font-bold text-[#1E2B2A]">Your cards</h1>
         <p className="mt-2 text-[#6E7772]">

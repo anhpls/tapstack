@@ -173,6 +173,41 @@ export type Database = {
           },
         ]
       }
+      shop_invites: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          invited_by: string | null
+          role: Database["public"]["Enums"]["shop_role"]
+          shop_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["shop_role"]
+          shop_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          invited_by?: string | null
+          role?: Database["public"]["Enums"]["shop_role"]
+          shop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_invites_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       shop_members: {
         Row: {
           role: Database["public"]["Enums"]["shop_role"]
@@ -405,6 +440,7 @@ export type Database = {
           note: string
         }[]
       }
+      claim_invites: { Args: never; Returns: number }
       complete_transfer: {
         Args: { p_code: string; p_confirmed: number; p_shop_id: string }
         Returns: number
@@ -414,8 +450,22 @@ export type Database = {
         Returns: number
       }
       hide_membership: { Args: { p_membership_id: string }; Returns: undefined }
+      invite_member: {
+        Args: {
+          p_email: string
+          p_role?: Database["public"]["Enums"]["shop_role"]
+          p_shop_id: string
+        }
+        Returns: undefined
+      }
+      is_shop_manager: { Args: { p_shop_id: string }; Returns: boolean }
+      is_shop_owner: { Args: { p_shop_id: string }; Returns: boolean }
       join_shop: { Args: { p_shop_id: string }; Returns: undefined }
       redeem_reward: { Args: { p_member_number: string }; Returns: number }
+      remove_member: {
+        Args: { p_shop_id: string; p_user_id: string }
+        Returns: undefined
+      }
       request_redemption: {
         Args: { p_membership_id: string }
         Returns: {
@@ -429,6 +479,14 @@ export type Database = {
           code: string
           id: string
         }[]
+      }
+      set_member_role: {
+        Args: {
+          p_role: Database["public"]["Enums"]["shop_role"]
+          p_shop_id: string
+          p_user_id: string
+        }
+        Returns: undefined
       }
       shop_activity: {
         Args: { p_days?: number; p_shop_id: string }
@@ -448,6 +506,15 @@ export type Database = {
           membership_id: string
           rewards: number
           visits: number
+        }[]
+      }
+      shop_team: {
+        Args: { p_shop_id: string }
+        Returns: {
+          email: string
+          is_you: boolean
+          role: Database["public"]["Enums"]["shop_role"]
+          user_id: string
         }[]
       }
     }
