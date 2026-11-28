@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Tag, Stamp, Users, Settings } from "lucide-react";
 import Image from "next/image";
-
+import type { StaffShop } from "@/lib/auth";
+import { ShopSwitcher } from "./shop-switcher";
 // nav bar
 const nav = [
   { href: "/business", label: "Overview", icon: LayoutDashboard },
@@ -14,7 +15,13 @@ const nav = [
   { href: "/business/settings", label: "Settings", icon: Settings },
 ];
 
-export function Sidebar() {
+export function Sidebar({
+  shops,
+  currentId,
+}: {
+  shops: StaffShop[];
+  currentId: string;
+}) {
   const pathname = usePathname();
 
   return (
@@ -28,6 +35,12 @@ export function Sidebar() {
           priority
         />
       </Link>
+
+      {/* which shop you're managing */}
+      <div className="mb-6">
+        <ShopSwitcher shops={shops} currentId={currentId} />
+      </div>
+
       <nav className="space-y-1">
         {nav.map(({ href, label, icon: Icon }) => {
           const active = pathname === href;

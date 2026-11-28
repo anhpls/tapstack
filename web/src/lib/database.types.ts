@@ -430,6 +430,26 @@ export type Database = {
           id: string
         }[]
       }
+      shop_activity: {
+        Args: { p_days?: number; p_shop_id: string }
+        Returns: {
+          active_count: number
+          repeat_count: number
+        }[]
+      }
+      shop_customers: {
+        Args: { p_shop_id: string }
+        Returns: {
+          balance: number
+          from_paper: boolean
+          joined_at: string
+          last_visit: string
+          member_number: string
+          membership_id: string
+          rewards: number
+          visits: number
+        }[]
+      }
     }
     Enums: {
       shop_role: "owner" | "manager" | "staff"
