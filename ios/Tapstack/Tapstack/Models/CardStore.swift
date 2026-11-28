@@ -78,9 +78,13 @@ final class CardStore {
         isLoading = true
         defer { isLoading = false }
         do {
+            // only my own cards: staff can also read their shop's customers' memberships
+            // (business mode needs that), so without this filter those would show in my stack
+            let userID = try await supabase.auth.session.user.id
             let rows: [MembershipRow] = try await supabase
                 .from("memberships")
                 .select("id, member_number, shops(id, name, category, color_hex, stamp_programs(stamps_needed, reward)), balance")
+                .eq("user_id", value: userID.uuidString)
                 .is("hidden_at", value: nil)
                 .order("created_at")
                 .execute()
@@ -148,6 +152,9 @@ final class CardStore {
                 .execute()
             await load()
         } catch {
+            // DEBUG (remove-card bug): which card and user did the database reject?
+            let uid = try? await supabase.auth.session.user.id
+            print("DEBUG hide failed | card \(card.id) | shop \(card.shopName) | user \(uid?.uuidString ?? "none") | \(error)")
             errorMessage = error.localizedDescription
         }
     }

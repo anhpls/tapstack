@@ -92,6 +92,8 @@ struct RedeemView: View {
             pulse = true
             await waitForStaff()
         } catch let error as PostgrestError {
+            // DEBUG (remove-card bug): which card did the database reject?
+            print("DEBUG redeem failed | card \(card.id) | shop \(card.shopName) | \(error.message)")
             errorMessage = error.message
         } catch {
             errorMessage = error.localizedDescription
