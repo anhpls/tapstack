@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutDashboard, Tag, Stamp, Users, Settings } from "lucide-react";
+import Image from "next/image";
 
 // nav bar
 const nav = [
-  { href: "/", label: "Overview", icon: LayoutDashboard },
-  { href: "/deals", label: "Deals", icon: Tag },
-  { href: "/rewards", label: "Rewards", icon: Stamp },
-  { href: "/customers", label: "Customers", icon: Users },
-  { href: "/settings", label: "Settings", icon: Settings },
+  { href: "/business", label: "Overview", icon: LayoutDashboard },
+  { href: "/business/customers", label: "Customers", icon: Users },
+  { href: "/business/rewards", label: "Rewards", icon: Stamp },
+  { href: "/business/deals", label: "Deals", icon: Tag },
+  { href: "/business/settings", label: "Settings", icon: Settings },
 ];
 
 export function Sidebar() {
@@ -18,10 +19,15 @@ export function Sidebar() {
 
   return (
     <aside className="hidden w-60 shrink-0 border-r border-neutral-200 bg-white px-4 py-6 md:block">
-      <div className="mb-8 px-2 text-xl tracking-tight">
-        <span className="font-bold">tap</span>
-        <span className="font-normal text-neutral-400">stack</span>
-      </div>
+      <Link href="/business" className="mb-8 block px-2">
+        <Image
+          src="/brand/tapstack-wordmark.svg"
+          alt="Tapstack"
+          width={130}
+          height={36}
+          priority
+        />
+      </Link>
       <nav className="space-y-1">
         {nav.map(({ href, label, icon: Icon }) => {
           const active = pathname === href;
@@ -30,7 +36,9 @@ export function Sidebar() {
               key={href}
               href={href}
               className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition ${
-                active ? "bg-neutral-900 text-white" : "text-neutral-600 hover:bg-neutral-100"
+                active
+                  ? "bg-neutral-900 text-white"
+                  : "text-neutral-600 hover:bg-neutral-100"
               }`}
             >
               <Icon className="h-4 w-4" />
@@ -39,6 +47,13 @@ export function Sidebar() {
           );
         })}
       </nav>
+      {/* hop back to your own cards */}
+      <Link
+        href="/"
+        className="mt-8 block rounded-xl px-3 py-2 text-sm font-semibold text-[#4E5A55] hover:bg-[#ECEFEA]"
+      >
+        Switch to personal
+      </Link>
     </aside>
   );
 }

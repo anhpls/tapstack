@@ -21,8 +21,7 @@ export default function LoginPage() {
     setError(null);
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      // no surprise sign ups from the web, you need an account from the app first
-      options: { shouldCreateUser: false },
+      options: { shouldCreateUser: true },
     });
     setBusy(false);
     if (error) return setError(error.message);
